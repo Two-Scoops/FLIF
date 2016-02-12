@@ -119,7 +119,7 @@ public:
 
 template<typename plane_t>
 void copy_row_range(plane_t &plane, const GeneralPlane &other, const uint32_t r, const uint32_t begin, const uint32_t end, const uint32_t stride = 1) {
-    //assuming pixels are only ever copied from either a constant plane or a plane of the same type
+    //assuming pixels are only ever copied from a plane of the same type
     const plane_t &src = static_cast<const plane_t&>(other);
     for(uint32_t c = begin; c < end; c+= stride) plane.set(r,c, src.get(r,c));
 }
@@ -499,6 +499,16 @@ public:
 
     ColorVal getFRA(const uint32_t z, const uint32_t r, const uint32_t c) {
         return static_cast<Plane<ColorVal_intern_8>&>(*planes[4]).get(z,r,c);
+    }
+
+    template<typename plane_t>
+    ColorVal getT(int p, const uint32_t r, const uint32_t c) const {
+        return static_cast<plane_t&>(*planes[p]).get(r,c);
+    }
+
+    template<typename plane_t>
+    ColorVal getT(int p, const uint32_t z, const uint32_t r, const uint32_t c) const {
+        return static_cast<plane_t&>(*planes[p]).get(z,r,c);
     }
 
     int getDepth() const {

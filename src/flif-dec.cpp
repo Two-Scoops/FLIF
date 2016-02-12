@@ -66,7 +66,7 @@ void flif_decode_scanline_plane(plane_t &plane, Coder &coder, Images &images, co
     for (uint32_t c = begin; c < end; c++) {
         //predict pixel for alphazero and get a previous pixel for FRA
         if (alphazero && p<3 && alpha.get(r,c) == 0) {plane.set(r,c,predictScanlines_plane(plane,r,c, grey)); continue;}
-        if (FRA && p<4 && image.getFRA(r,c) > 0) {assert(fr >= image.getFRA(r,c)); plane.set(r,c,images[fr-image.getFRA(r,c)](p,r,c)); continue;}
+        if (FRA && p<4 && image.getFRA(r,c) > 0) {assert(fr >= image.getFRA(r,c)); plane.set(r,c,images[fr-image.getFRA(r,c)].getT<plane_t>(p,r,c)); continue;}
         //calculate properties and use them to decode the next pixel
         ColorVal guess = predict_and_calcProps_scanlines_plane(properties,ranges,image,plane,p,r,c,min,max, minP);
         if (FRA && p==4 && max > fr) max = fr;
@@ -257,7 +257,7 @@ void flif_decode_plane_zoomlevel_horizontal(plane_t &plane, Coder &coder, Images
     }
     for (uint32_t c = begin; c < end; c++) {
         if (alphazero && p<3 && alpha.get(z,r,c) == 0) { plane.set(z,r,c,predict_plane_horizontal(plane,z,p,r,c, image.rows(z))); continue;}
-        if (FRA && p<4 && image.getFRA(z,r,c) > 0) { plane.set(z,r,c,images[fr-image.getFRA(z,r,c)](p,z,r,c)); continue;}
+        if (FRA && p<4 && image.getFRA(z,r,c) > 0) { plane.set(z,r,c,images[fr-image.getFRA(z,r,c)].getT<plane_t>(p,z,r,c)); continue;}
         ColorVal guess = predict_and_calcProps_plane(properties,ranges,image,plane,z,p,r,c,min,max);
         if (FRA && p==4 && max > fr) max = fr;
         ColorVal curr = coder.read_int(properties, min - guess, max - guess) + guess;
@@ -292,7 +292,7 @@ void flif_decode_plane_zoomlevel_vertical(plane_t &plane, Coder &coder, Images &
     }
     for (uint32_t c = begin; c < end; c+=2) {
         if (alphazero && p<3 && alpha.get(z,r,c) == 0) { plane.set(z,r,c,predict_plane_vertical(plane, z, p, r, c, image.cols(z))); continue;}
-        if (FRA && p<4 && image.getFRA(z,r,c) > 0) { plane.set(z,r,c,images[fr-image.getFRA(z,r,c)](p,z,r,c)); continue;}
+        if (FRA && p<4 && image.getFRA(z,r,c) > 0) { plane.set(z,r,c,images[fr-image.getFRA(z,r,c)].getT<plane_t>(p,z,r,c)); continue;}
         ColorVal guess = predict_and_calcProps_plane(properties,ranges,image,plane,z,p,r,c,min,max);
         if (FRA && p==4 && max > fr) max = fr;
         ColorVal curr = coder.read_int(properties, min - guess, max - guess) + guess;
