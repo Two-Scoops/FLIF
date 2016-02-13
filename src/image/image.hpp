@@ -57,7 +57,7 @@ public:
     virtual void set(const int z, const uint32_t r, const uint32_t c, const ColorVal x) =0;
     virtual ColorVal get(const int z, const uint32_t r, const uint32_t c) const =0;
     virtual void normalize_scale() {}
-    virtual void accept_visitor(PlaneVisitor &v) =0;
+    virtual bool accept_visitor(PlaneVisitor &v) =0;
     // access pixel by zoomlevel coordinate
     uint32_t zoom_rowpixelsize(int zoomlevel) const {
         return 1<<((zoomlevel+1)/2);
@@ -70,10 +70,10 @@ public:
 template <typename> class Plane;
 
 struct PlaneVisitor {
-    virtual void visit(Plane<ColorVal_intern_8>&) =0;
-    virtual void visit(Plane<ColorVal_intern_16>&) =0;
-    virtual void visit(Plane<ColorVal_intern_16u>&) =0;
-    virtual void visit(Plane<ColorVal_intern_32>&) =0;
+    virtual bool visit(Plane<ColorVal_intern_8>&) =0;
+    virtual bool visit(Plane<ColorVal_intern_16>&) =0;
+    virtual bool visit(Plane<ColorVal_intern_16u>&) =0;
+    virtual bool visit(Plane<ColorVal_intern_32>&) =0;
     virtual ~PlaneVisitor() {}
 };
 
@@ -111,8 +111,8 @@ public:
     }
     void normalize_scale() { s = 0; }
 
-    void accept_visitor(PlaneVisitor &v) {
-        v.visit(*this);
+    bool accept_visitor(PlaneVisitor &v) {
+        return v.visit(*this);
     }
 };
 
