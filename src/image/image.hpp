@@ -68,14 +68,12 @@ public:
 };
 
 template <typename> class Plane;
-class ConstantPlane;
 
 struct PlaneVisitor {
     virtual void visit(Plane<ColorVal_intern_8>&) =0;
     virtual void visit(Plane<ColorVal_intern_16>&) =0;
     virtual void visit(Plane<ColorVal_intern_16u>&) =0;
     virtual void visit(Plane<ColorVal_intern_32>&) =0;
-    virtual void visit(ConstantPlane&) =0;
     virtual ~PlaneVisitor() {}
 };
 
@@ -101,6 +99,10 @@ public:
         return data[sr*width + sc];
     }
 
+    bool is_constant() const {
+        return s >= 32;
+    }
+
     void set(const int z, const uint32_t r, const uint32_t c, const ColorVal x) {
         set(r*zoom_rowpixelsize(z),c*zoom_colpixelsize(z),x);
     }
@@ -114,40 +116,12 @@ public:
     }
 };
 
-class ConstantPlane final : public GeneralPlane {
-    ColorVal color;
-public:
-    ConstantPlane(ColorVal c) : color(c) {}
-    void set(const uint32_t r, const uint32_t c, const ColorVal x) {
-        assert(x == color);
-    }
-    ColorVal get(const uint32_t r, const uint32_t c) const {
-        return color;
-    }
-    bool is_constant() const { return true; }
-
-    void set(const int z, const uint32_t r, const uint32_t c, const ColorVal x) {
-        assert(x == color);
-    }
-    ColorVal get(const int z, const uint32_t r, const uint32_t c) const {
-        return color;
-    }
-
-    void accept_visitor(PlaneVisitor &v) {
-        v.visit(*this);
-    }
-};
 
 template<typename plane_t>
 void copy_row_range(plane_t &plane, const GeneralPlane &other, const uint32_t r, const uint32_t begin, const uint32_t end, const uint32_t stride = 1) {
     //assuming pixels are only ever copied from either a constant plane or a plane of the same type
-    if (other.is_constant()) {
-        const ConstantPlane &src = static_cast<const ConstantPlane&>(other);
-        for(uint32_t c = begin; c < end; c+= stride) plane.set(r,c, src.get(r,c));
-    }else {
-        const plane_t &src = static_cast<const plane_t&>(other);
-        for(uint32_t c = begin; c < end; c+= stride) plane.set(r,c, src.get(r,c));
-    }
+    const plane_t &src = static_cast<const plane_t&>(other);
+    for(uint32_t c = begin; c < end; c+= stride) plane.set(r,c, src.get(r,c));
 }
 
 
@@ -392,7 +366,20 @@ public:
     void make_constant_plane(const int p, const ColorVal val) {
       if (p>3 || p<0) return;
       planes[p].reset(nullptr);
-      planes[p] = make_unique<ConstantPlane>(val);
+      //A constant plane is just a plane set to max scale (one big pixel)
+      if (depth <= 8) {
+          if (p==0) planes[0] = make_unique<Plane<ColorVal_intern_8>>(width, height, val, 32); // R,Y
+          if (p==1) planes[1] = make_unique<Plane<ColorVal_intern_16>>(width, height, val, 32); // G,I
+          if (p==2) planes[2] = make_unique<Plane<ColorVal_intern_16>>(width, height, val, 32); // B,Q
+          if (p==3) planes[3] = make_unique<Plane<ColorVal_intern_8>>(width, height, val, 32); // A
+#ifdef SUPPORT_HDR
+      } else {
+          if (p==0) planes[0] = make_unique<Plane<ColorVal_intern_16u>>(width, height, val, 32); // R,Y
+          if (p==1) planes[1] = make_unique<Plane<ColorVal_intern_32>>(width, height, val, 32); // G,I
+          if (p==2) planes[2] = make_unique<Plane<ColorVal_intern_32>>(width, height, val, 32); // B,Q
+          if (p==3) planes[3] = make_unique<Plane<ColorVal_intern_16u>>(width, height, val, 32); // A
+#endif
+      }
     }
     void undo_make_constant_plane(const int p) {
       if (p>3 || p<0) return;
