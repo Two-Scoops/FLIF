@@ -141,13 +141,13 @@ bool flif_decode_scanlines_inner(IO &io, Rac &rac, std::vector<Coder> &coders, I
                 Image &image = images[fr];
                 GeneralPlane &plane = image.getPlane(p);
                 if (image.getDepth() <= 8) {
-                    Plane<ColorVal_intern_8> null_alpha(1,1,1,31);
+                    Plane<ColorVal_intern_8> null_alpha(1,1,1,16);
                     GeneralPlane &alpha = nump > 3 ? image.getPlane(3) : null_alpha;
                     scanline_plane_decoder<Coder,Plane<ColorVal_intern_8>> decoder(coders[p],images,ranges,properties,alpha,p,fr,r,greys[p],minP,alphazero,FRA);
                     plane.accept_visitor(decoder);
 #ifdef SUPPORT_HDR
                 } else {
-                    Plane<ColorVal_intern_16u> null_alpha(1,1,1,31);
+                    Plane<ColorVal_intern_16u> null_alpha(1,1,1,16);
                     GeneralPlane &alpha = nump > 3 ? image.getPlane(3) : null_alpha;
                     scanline_plane_decoder<Coder,Plane<ColorVal_intern_16u>> decoder(coders[p],images,ranges,properties,alpha,p,fr,r,greys[p],minP,alphazero,FRA);
                     plane.accept_visitor(decoder);
@@ -368,13 +368,13 @@ bool flif_decode_FLIF2_inner(IO& io, Rac &rac, std::vector<Coder> &coders, Image
                 Image &image = images[fr];
                 GeneralPlane &plane = image.getPlane(p);
                 if (image.getDepth() <= 8) {
-                    Plane<ColorVal_intern_8> null_alpha(1,1,1,31);
+                    Plane<ColorVal_intern_8> null_alpha(1,1,1,16);
                     GeneralPlane &alpha = nump > 3 ? image.getPlane(3) : null_alpha;
                     horizontal_plane_decoder<Coder,Plane<ColorVal_intern_8>> decoder(coders[p],images,ranges,properties,alpha,p,z,fr,r,alphazero,FRA);
                     plane.accept_visitor(decoder);
 #ifdef SUPPORT_HDR
                 } else {
-                    Plane<ColorVal_intern_16u> null_alpha(1,1,1,31);
+                    Plane<ColorVal_intern_16u> null_alpha(1,1,1,16);
                     GeneralPlane &alpha = nump > 3 ? image.getPlane(3) : null_alpha;
                     horizontal_plane_decoder<Coder,Plane<ColorVal_intern_16u>> decoder(coders[p],images,ranges,properties,alpha,p,z,fr,r,alphazero,FRA);
                     plane.accept_visitor(decoder);
@@ -398,13 +398,13 @@ bool flif_decode_FLIF2_inner(IO& io, Rac &rac, std::vector<Coder> &coders, Image
                 Image &image = images[fr];
                 GeneralPlane &plane = image.getPlane(p);
                 if (image.getDepth() <= 8) {
-                    Plane<ColorVal_intern_8> null_alpha(1,1,1,31);
+                    Plane<ColorVal_intern_8> null_alpha(1,1,1,16);
                     GeneralPlane &alpha = nump > 3 ? image.getPlane(3) : null_alpha;
                     vertical_plane_decoder<Coder,Plane<ColorVal_intern_8>> decoder(coders[p],images,ranges,properties,alpha,p,z,fr,r,alphazero,FRA);
                     plane.accept_visitor(decoder);
 #ifdef SUPPORT_HDR
                 } else {
-                    Plane<ColorVal_intern_16u> null_alpha(1,1,1,31);
+                    Plane<ColorVal_intern_16u> null_alpha(1,1,1,16);
                     GeneralPlane &alpha = nump > 3 ? image.getPlane(3) : null_alpha;
                     vertical_plane_decoder<Coder,Plane<ColorVal_intern_16u>> decoder(coders[p],images,ranges,properties,alpha,p,z,fr,r,alphazero,FRA);
                     plane.accept_visitor(decoder);

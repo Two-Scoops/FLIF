@@ -100,7 +100,7 @@ public:
     }
 
     bool is_constant() const {
-        return s >= 31;
+        return s >= 16;
     }
 
     void set(const int z, const uint32_t r, const uint32_t c, const ColorVal x) {
@@ -368,16 +368,16 @@ public:
       planes[p].reset(nullptr);
       //A constant plane is just a plane set to max scale (one big pixel)
       if (depth <= 8) {
-          if (p==0) planes[0] = make_unique<Plane<ColorVal_intern_8>>(width, height, val, 31); // R,Y
-          if (p==1) planes[1] = make_unique<Plane<ColorVal_intern_16>>(width, height, val, 31); // G,I
-          if (p==2) planes[2] = make_unique<Plane<ColorVal_intern_16>>(width, height, val, 31); // B,Q
-          if (p==3) planes[3] = make_unique<Plane<ColorVal_intern_8>>(width, height, val, 31); // A
+          if (p==0) planes[0] = make_unique<Plane<ColorVal_intern_8>>(width, height, val, 16); // R,Y
+          if (p==1) planes[1] = make_unique<Plane<ColorVal_intern_16>>(width, height, val, 16); // G,I
+          if (p==2) planes[2] = make_unique<Plane<ColorVal_intern_16>>(width, height, val, 16); // B,Q
+          if (p==3) planes[3] = make_unique<Plane<ColorVal_intern_8>>(width, height, val, 16); // A
 #ifdef SUPPORT_HDR
       } else {
-          if (p==0) planes[0] = make_unique<Plane<ColorVal_intern_16u>>(width, height, val, 31); // R,Y
-          if (p==1) planes[1] = make_unique<Plane<ColorVal_intern_32>>(width, height, val, 31); // G,I
-          if (p==2) planes[2] = make_unique<Plane<ColorVal_intern_32>>(width, height, val, 31); // B,Q
-          if (p==3) planes[3] = make_unique<Plane<ColorVal_intern_16u>>(width, height, val, 31); // A
+          if (p==0) planes[0] = make_unique<Plane<ColorVal_intern_16u>>(width, height, val, 16); // R,Y
+          if (p==1) planes[1] = make_unique<Plane<ColorVal_intern_32>>(width, height, val, 16); // G,I
+          if (p==2) planes[2] = make_unique<Plane<ColorVal_intern_32>>(width, height, val, 16); // B,Q
+          if (p==3) planes[3] = make_unique<Plane<ColorVal_intern_16u>>(width, height, val, 16); // A
 #endif
       }
     }
